@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 using AMQPOverWebSocketProxy.IOC;
 using AMQPOverWebSocketProxy.Logging;
 using AMQPOverWebSocketProxy.Serialization;
@@ -42,7 +41,7 @@ namespace AMQPOverWebSocketProxy
 
                 config.SetDescription("A proxy for the AMQP protocol over WebSocket");
                 config.SetDisplayName("AMQP over WebSocket Proxy");
-                config.SetServiceName("AMQPOverWebSocketProxy");
+                config.SetServiceName("AMQP over WebSocket Proxy");
             });
         }
 

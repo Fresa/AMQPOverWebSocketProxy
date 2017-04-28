@@ -15,7 +15,7 @@ namespace AMQPOverWebSocketProxy.Actors
 
         #endregion
 
-        private static ILogger Logger => new Lazy<ILogger>(LoggerFactory.Create<SocketActor>).Value;
+        private static ILogger Logger => LoggerFactory.Create<SocketActor>();
 
         private readonly ILogFactory _logFactory;
         private readonly IBootstrap _socketBootstrap;
@@ -26,6 +26,12 @@ namespace AMQPOverWebSocketProxy.Actors
             _logFactory = logFactory;
 
             Start();
+        }
+
+        protected override void PostRestart(Exception reason)
+        {
+            Start();
+            base.PostRestart(reason);
         }
 
         private void Start()

@@ -11,7 +11,7 @@ namespace AMQPOverWebSocketProxy
 
         public bool Start(HostControl hostControl, IDependencyResolverFactory dependencyResolverFactory)
         {
-            _actorSystem = ActorSystem.Create("AMQPOverWebSocketProxyActors");
+            _actorSystem = ActorSystem.Create("AMQP-over-WebSocket-Proxy-Actors");
             dependencyResolverFactory.Create(_actorSystem);
 
             _actorSystem.ActorOf(Props.Create(() => new SocketSupervisor(hostControl.Stop)));
