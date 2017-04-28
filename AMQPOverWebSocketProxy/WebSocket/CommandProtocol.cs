@@ -25,7 +25,7 @@ namespace AMQPOverWebSocketProxy.WebSocket
         }
 
         public override bool TryGetCommand(string name, out ISubCommand<WebSocketSession> command)
-        {
+        {            
             return _commands.TryGetValue(name, out command);
         }
     }

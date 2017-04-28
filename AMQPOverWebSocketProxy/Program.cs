@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.SimpleInjector;
@@ -37,14 +38,16 @@ namespace AMQPOverWebSocketProxy
                 config.Service<IService>(configurator =>
                 {
                     configurator.ConstructUsingSimpleInjector();
-                    configurator.WhenStarted((service, control) => service.Start(system => new SimpleInjectorDependencyResolver(Container, system)));
-                    configurator.WhenStopped((service, control) => service.Stop());
+                    configurator.WhenStarted(service => service.Start(system => new SimpleInjectorDependencyResolver(Container, system)));
+                    configurator.WhenStopped(service => service.Stop());
                 });
 
                 config.SetDescription("A proxy for the AMQP protocol over WebSocket");
                 config.SetDisplayName("AMQP over WebSocket Proxy");
                 config.SetServiceName("AMQPOverWebSocketProxy");
             });
+
+            Task.Delay(10000).Wait();
         }
 
         private static void Configure()

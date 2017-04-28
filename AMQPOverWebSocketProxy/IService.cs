@@ -6,7 +6,7 @@ namespace AMQPOverWebSocketProxy
 {
     public interface IService
     {
-        bool Start(Func<ActorSystem, IDependencyResolver> dependencyResolverFactory);
-        bool Stop();
+        void Start(Func<ActorSystem, IDependencyResolver> dependencyResolverFactory);
+        void Stop();
     }
 }

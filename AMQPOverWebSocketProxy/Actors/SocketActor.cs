@@ -29,16 +29,22 @@ namespace AMQPOverWebSocketProxy.Actors
             if (_socketBootstrap.Initialize(_logFactory) == false)
             {
                 Logger.Fatal(null, "Failed to initialize socket server(s).");
-                Context.Sender.Tell(new FailedStartingService());
+                Context.Stop(Self);
+
+                Self.Tell(PoisonPill.Instance);
+
                 return;
             }
 
+
+            Self.Tell(PoisonPill.Instance, Self);
+            return;
             var result = _socketBootstrap.Start();
 
             if (result == StartResult.Failed)
             {
                 Logger.Fatal(null, "Failed to start socket server(s). Result: {0}", result);
-                Context.Sender.Tell(new FailedStartingService());
+                Context.Stop(Self);
                 return;
             }
 

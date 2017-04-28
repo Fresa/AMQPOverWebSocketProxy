@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using AMQPOverWebSocketProxy.Actors;
@@ -10,18 +11,36 @@ namespace AMQPOverWebSocketProxy
         private IDependencyResolver _resolver;
         private ActorSystem _actorSystem;
 
-        public bool Start(Func<ActorSystem, IDependencyResolver> dependencyResolverFactory)
+        public async void Start(Func<ActorSystem, IDependencyResolver> dependencyResolverFactory)
         {
             _actorSystem = ActorSystem.Create("AMQPOverWebSocketProxyActors");
             _resolver = dependencyResolverFactory(_actorSystem);
 
-            _actorSystem.ActorOf(_resolver.Create<SocketActor>(), "service-actor");
-            return true;
+            _actorSystem.RegisterOnTermination(() =>
+            {
+                
+            });
+
+            var socketActor = _actorSystem.ActorOf(_resolver.Create<SocketActor>(), "socket-actor");
+
+
+
+            try
+            {
+                await socketActor.Ask<SocketActor.FailedStartingService>(
+                    "Did you fail starting the service?",
+                    TimeSpan.FromSeconds(5));
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+            Stop();            
         }
 
-        public bool Stop()
+        public async void Stop()
         {
-            return _actorSystem.Terminate().Wait(TimeSpan.FromSeconds(20));
+            await _actorSystem.Terminate();
         }
     }
 }
