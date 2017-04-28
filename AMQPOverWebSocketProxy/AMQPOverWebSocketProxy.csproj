@@ -48,7 +48,7 @@
       <HintPath>..\packages\Common.Logging.3.0.0.31\lib\net451\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Common.Serialization">
-      <HintPath>..\packages\Common.Serialization.2.2.0.49\lib\net451\Common.Serialization.dll</HintPath>
+      <HintPath>..\packages\Common.Serialization.2.0.45.42\lib\net451\Common.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -102,6 +102,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actors\SocketSupervisor.cs" />
+    <Compile Include="IOC\IDependencyResolverFactory.cs" />
+    <Compile Include="IOC\SimpleInjectorDependencyResolverFactory.cs" />
     <Compile Include="IService.cs" />
     <Compile Include="Logging\DefaultLogFactory.cs" />
     <Compile Include="Logging\Logger.cs" />

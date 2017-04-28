@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-using Akka.Actor;
-using Akka.DI.Core;
-using Akka.DI.SimpleInjector;
+using AMQPOverWebSocketProxy.IOC;
 using AMQPOverWebSocketProxy.Logging;
 using AMQPOverWebSocketProxy.Serialization;
 using AMQPOverWebSocketProxy.WebSocket;
@@ -38,7 +36,7 @@ namespace AMQPOverWebSocketProxy
                 config.Service<IService>(configurator =>
                 {
                     configurator.ConstructUsingSimpleInjector();
-                    configurator.WhenStarted(service => service.Start(system => new SimpleInjectorDependencyResolver(Container, system)));
+                    configurator.WhenStarted((service, control) => service.Start(control, new SimpleInjectorDependencyResolverFactory(Container)));
                     configurator.WhenStopped(service => service.Stop());
                 });
 
@@ -46,8 +44,6 @@ namespace AMQPOverWebSocketProxy
                 config.SetDisplayName("AMQP over WebSocket Proxy");
                 config.SetServiceName("AMQPOverWebSocketProxy");
             });
-
-            Task.Delay(10000).Wait();
         }
 
         private static void Configure()

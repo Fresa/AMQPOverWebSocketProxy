@@ -1,41 +1,21 @@
-using System;
-using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.DI.Core;
 using AMQPOverWebSocketProxy.Actors;
+using AMQPOverWebSocketProxy.IOC;
+using Topshelf;
 
 namespace AMQPOverWebSocketProxy
 {
     public sealed class Service : IService
     {
-        private IDependencyResolver _resolver;
         private ActorSystem _actorSystem;
 
-        public async void Start(Func<ActorSystem, IDependencyResolver> dependencyResolverFactory)
+        public bool Start(HostControl hostControl, IDependencyResolverFactory dependencyResolverFactory)
         {
             _actorSystem = ActorSystem.Create("AMQPOverWebSocketProxyActors");
-            _resolver = dependencyResolverFactory(_actorSystem);
+            dependencyResolverFactory.Create(_actorSystem);
 
-            _actorSystem.RegisterOnTermination(() =>
-            {
-                
-            });
-
-            var socketActor = _actorSystem.ActorOf(_resolver.Create<SocketActor>(), "socket-actor");
-
-
-
-            try
-            {
-                await socketActor.Ask<SocketActor.FailedStartingService>(
-                    "Did you fail starting the service?",
-                    TimeSpan.FromSeconds(5));
-            }
-            catch (TaskCanceledException)
-            {
-                return;
-            }
-            Stop();            
+            _actorSystem.ActorOf(Props.Create(() => new SocketSupervisor(hostControl.Stop)));
+            return true;
         }
 
         public async void Stop()

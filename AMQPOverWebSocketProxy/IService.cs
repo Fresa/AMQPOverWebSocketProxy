@@ -1,12 +1,11 @@
-﻿using System;
-using Akka.Actor;
-using Akka.DI.Core;
+﻿using AMQPOverWebSocketProxy.IOC;
+using Topshelf;
 
 namespace AMQPOverWebSocketProxy
 {
     public interface IService
     {
-        void Start(Func<ActorSystem, IDependencyResolver> dependencyResolverFactory);
+        bool Start(HostControl hostControl, IDependencyResolverFactory dependencyResolverFactory);
         void Stop();
     }
 }

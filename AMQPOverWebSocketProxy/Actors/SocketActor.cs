@@ -9,7 +9,11 @@ namespace AMQPOverWebSocketProxy.Actors
 {
     public sealed class SocketActor : ReceiveActor
     {
+        #region Messages
+
         public class FailedStartingService { }
+
+        #endregion
 
         private static ILogger Logger => new Lazy<ILogger>(LoggerFactory.Create<SocketActor>).Value;
 
@@ -29,22 +33,16 @@ namespace AMQPOverWebSocketProxy.Actors
             if (_socketBootstrap.Initialize(_logFactory) == false)
             {
                 Logger.Fatal(null, "Failed to initialize socket server(s).");
-                Context.Stop(Self);
-
-                Self.Tell(PoisonPill.Instance);
-
+                Context.Parent.Tell(new FailedStartingService());
                 return;
             }
 
-
-            Self.Tell(PoisonPill.Instance, Self);
-            return;
             var result = _socketBootstrap.Start();
 
             if (result == StartResult.Failed)
             {
                 Logger.Fatal(null, "Failed to start socket server(s). Result: {0}", result);
-                Context.Stop(Self);
+                Context.Parent.Tell(new FailedStartingService());
                 return;
             }
 
