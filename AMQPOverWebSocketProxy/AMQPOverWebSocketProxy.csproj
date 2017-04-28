@@ -106,7 +106,8 @@
     <Compile Include="Logging\DefaultLogFactory.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Serialization\NonPublicMembersContractResolver.cs" />
-    <Compile Include="ServiceActor.cs" />
+    <Compile Include="Service.cs" />
+    <Compile Include="Actors\SocketActor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebSocket\CommandProtocol.cs" />
