@@ -36,6 +36,7 @@ namespace AMQPOverWebSocketProxy.Actors
 
         private void Start()
         {
+            Logger.Info($"Starting up as {Self} by {Context.Parent}");
             if (_socketBootstrap.Initialize(_logFactory) == false)
             {
                 Logger.Fatal(null, "Failed to initialize socket server(s).");
@@ -59,6 +60,48 @@ namespace AMQPOverWebSocketProxy.Actors
         {
             _socketBootstrap.Stop();
             base.PostStop();
+        }
+    }
+
+    public class TestActor : ReceiveActor
+    {
+
+        private static ILogger Logger => LoggerFactory.Create<TestActor>();
+
+        public class TestMessage
+        {
+            public string Msg { get; set; }
+        }
+
+        public TestActor()
+        {
+            Logger.Info($"Starting up as {Self} by {Context.Parent}");
+            Receive<TestMessage>(message =>
+            {
+                Logger.Info($"{Self}: Received {message.Msg} from {Sender}.");
+                Sender.Tell(new SendActor.ReturnMessage { Msg = "Hello to you too!" });
+            });
+        }
+    }
+
+    public class SendActor : ReceiveActor
+    {
+
+        private static ILogger Logger => LoggerFactory.Create<TestActor>();
+
+        public class ReturnMessage
+        {
+            public string Msg { get; set; }
+        }
+
+        public SendActor(IActorRef receiver)
+        {
+            Logger.Info($"Starting up as {Self} by {Context.Parent}");
+            Receive<ReturnMessage>(message =>
+            {
+                Logger.Info($"{Self}: Received {message.Msg} from {Sender}.");
+            });
+            receiver.Tell(new TestActor.TestMessage { Msg = "Hello from the other side" });
         }
     }
 }

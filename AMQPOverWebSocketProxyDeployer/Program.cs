@@ -1,6 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Akka.Actor;
+using Akka.Configuration;
+using AMQPOverWebSocketProxy;
+using AMQPOverWebSocketProxy.Actors;
 using AMQPOverWebSocketProxy.IOC;
 using AMQPOverWebSocketProxy.Logging;
 using AMQPOverWebSocketProxy.Serialization;
@@ -15,35 +22,49 @@ using SuperSocket.SocketBase.Logging;
 using SuperSocket.SocketBase.Protocol;
 using SuperSocket.SocketBase.Sockets;
 using SuperSocket.WebSocket.SubProtocol;
-using Topshelf;
-using Topshelf.SimpleInjector;
 
-namespace AMQPOverWebSocketProxy
+namespace AMQPOverWebSocketProxyDeployer
 {
-    internal class Program
+    class Program
     {
         private static readonly Container Container = new Container();
 
-        private static void Main()
+        static void Main(string[] args)
         {
             Configure();
 
-            HostFactory.Run(config =>
+            using (var system = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
+            akka {  
+                actor{
+                    provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
+                    deployment {
+                        /socket-actor {
+                            remote = ""akka.tcp://AMQP-over-WebSocket-Proxy-Actors@localhost:8090""
+                        }
+                    }
+                }
+                remote {
+                    helios.tcp {
+                        port = 0
+                        hostname = localhost
+                    }
+                }
+            }")))
             {
-                config.UseSimpleInjector(Container);
-                config.UseNLog();
+                var a = new SimpleInjectorDependencyResolverFactory(Container);
+                a.Create(system);
 
-                config.Service<IService>(configurator =>
-                {
-                    configurator.ConstructUsingSimpleInjector();
-                    configurator.WhenStarted((service, control) => service.Start(control, new SimpleInjectorDependencyResolverFactory(Container)));
-                    configurator.WhenStopped(service => service.Stop());
-                });
+                //var actor = system.ActorOf(Props.Create(() => new TestActor()), "socket-actor");
+                //system.ActorOf(Props.Create(() => new SendActor(actor)), "sender");
+                system.ActorOf(Props.Create(() => new SocketSupervisor2()), "socket-actor");
 
-                config.SetDescription("A proxy for the AMQP protocol over WebSocket");
-                config.SetDisplayName("AMQP over WebSocket Proxy");
-                config.SetServiceName("AMQP over WebSocket Proxy");
-            });
+                Console.ReadKey();
+            }
+        }
+
+        private static void DummyFunc()
+        {
+
         }
 
         private static void Configure()
@@ -73,7 +94,7 @@ namespace AMQPOverWebSocketProxy
                     }
                 })));
 
-            Container.RegisterSingleton<IService, RemoteService>();
+            //Container.RegisterSingleton<IService, Service>();
 
             Container.RegisterSingleton<IServiceProvider>(() => Container);
 

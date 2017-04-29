@@ -2,3 +2,5 @@
 AMQPOverWebSocketProxy/bin/
 AMQPOverWebSocketProxy/obj/
 packages/
+AMQPOverWebSocketProxyDeployer/bin/
+AMQPOverWebSocketProxyDeployer/obj/

@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using SuperSocket.SocketBase.Config;
+using SuperSocket.SocketEngine.Configuration;
 
 namespace AMQPOverWebSocketProxy.WebSocket
 {
@@ -19,6 +23,35 @@ namespace AMQPOverWebSocketProxy.WebSocket
             }
 
             return config;
+        }
+    }
+
+    public class RandomPortConfigProvider : ISuperSocketConfigurationProvider
+    {
+        public IConfigurationSource Get()
+        {
+            var port = new Random().Next(2000, 3000);
+            return new ConfigurationSource
+            {
+                Servers = new List<IServerConfig>
+                {
+                    new ServerConfig
+                    {
+                        Ip = "Any",
+                        Port = port,
+                        ServerTypeName = "AMQPOverWebSocketProxyServer",
+                        Name = "AMQPOverWebSocketProxyServer" + port
+                    }
+                },
+                ServerTypes = new List<ITypeProvider>
+                {
+                    new TypeProviderConfig
+                    {
+                        Name = "AMQPOverWebSocketProxyServer",
+                        Type = "AMQPOverWebSocketProxy.WebSocket.WebSocketServer, AMQPOverWebSocketProxy"
+                    }
+                }
+            };
         }
     }
 }

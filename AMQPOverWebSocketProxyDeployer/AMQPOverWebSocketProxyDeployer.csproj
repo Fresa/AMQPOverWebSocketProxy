@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6B95A236-07A8-4C7F-BB19-68DEEC8566BA}</ProjectGuid>
+    <ProjectGuid>{1EB99AC3-654D-426B-AF53-421B891C2B9C}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>AMQPOverWebSocketProxy</RootNamespace>
-    <AssemblyName>AMQPOverWebSocketProxy</AssemblyName>
+    <RootNamespace>AMQPOverWebSocketProxyDeployer</RootNamespace>
+    <AssemblyName>AMQPOverWebSocketProxyDeployer</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,9 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Akka, Version=1.2.0.33, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.1.2.0\lib\net45\Akka.dll</HintPath>
@@ -46,9 +44,6 @@
     </Reference>
     <Reference Include="Akka.Remote, Version=1.2.0.33, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Remote.1.2.0\lib\net45\Akka.Remote.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.3.0.0.31\lib\net451\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Common.Serialization">
       <HintPath>..\packages\Common.Serialization.2.0.45.42\lib\net451\Common.Serialization.dll</HintPath>
@@ -101,12 +96,6 @@
     <Reference Include="SimpleInjector.Extensions.ExecutionContextScoping, Version=3.1.2.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <HintPath>..\packages\SimpleInjector.Extensions.ExecutionContextScoping.3.1.2\lib\net45\SimpleInjector.Extensions.ExecutionContextScoping.dll</HintPath>
     </Reference>
-    <Reference Include="SuperSocket.Common">
-      <HintPath>..\Lib\SuperSocket\SuperSocket.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="SuperSocket.Facility">
-      <HintPath>..\Lib\SuperSocket\SuperSocket.Facility.dll</HintPath>
-    </Reference>
     <Reference Include="SuperSocket.SocketBase">
       <HintPath>..\Lib\SuperSocket\SuperSocket.SocketBase.dll</HintPath>
     </Reference>
@@ -122,10 +111,8 @@
     </Reference>
     <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Console, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
     </Reference>
@@ -193,45 +180,24 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
     </Reference>
-    <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Topshelf.4.0.3\lib\net452\Topshelf.dll</HintPath>
-    </Reference>
-    <Reference Include="Topshelf.NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Topshelf.NLog.4.0.3\lib\net452\Topshelf.NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="Topshelf.SimpleInjector, Version=1.0.0.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Topshelf.SimpleInjector.1.0.0.17\lib\net40\Topshelf.SimpleInjector.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actors\SocketSupervisor.cs" />
-    <Compile Include="IOC\IDependencyResolverFactory.cs" />
-    <Compile Include="IOC\SimpleInjectorDependencyResolverFactory.cs" />
-    <Compile Include="IService.cs" />
-    <Compile Include="Logging\DefaultLogFactory.cs" />
-    <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Serialization\NonPublicMembersContractResolver.cs" />
-    <Compile Include="Service.cs" />
-    <Compile Include="Actors\SocketActor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebSocket\CommandProtocol.cs" />
-    <Compile Include="WebSocket\ISuperSocketConfigurationProvider.cs" />
-    <Compile Include="WebSocket\JsonRequestInfoParser.cs" />
-    <Compile Include="WebSocket\JsonSubRequestInfo.cs" />
-    <Compile Include="WebSocket\SuperSocketBootStrapper.cs" />
-    <Compile Include="WebSocket\SuperSocketAppConfigProvider.cs" />
-    <Compile Include="WebSocket\WebSocketServer.cs" />
-    <Compile Include="WebSocket\WebSocketSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AMQPOverWebSocketProxy\AMQPOverWebSocketProxy.csproj">
+      <Project>{6b95a236-07a8-4c7f-bb19-68deec8566ba}</Project>
+      <Name>AMQPOverWebSocketProxy</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
