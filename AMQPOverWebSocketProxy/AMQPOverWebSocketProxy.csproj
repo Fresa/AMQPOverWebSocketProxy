@@ -50,8 +50,9 @@
     <Reference Include="Common.Logging">
       <HintPath>..\packages\Common.Logging.3.0.0.31\lib\net451\Common.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Serialization">
-      <HintPath>..\packages\Common.Serialization.2.0.45.42\lib\net451\Common.Serialization.dll</HintPath>
+    <Reference Include="Common.Serialization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Common.Serialization.2.2.0.49\lib\net451\Common.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="DotNetty.Buffers, Version=0.0.0.0, Culture=neutral, PublicKeyToken=bc13ca065fa06c29, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetty.Buffers.0.4.3\lib\net45\DotNetty.Buffers.dll</HintPath>
@@ -209,7 +210,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actors\SocketSupervisor.cs" />
+    <Compile Include="Actors\SocketSupervisorActor.cs" />
     <Compile Include="IOC\IDependencyResolverFactory.cs" />
     <Compile Include="IOC\SimpleInjectorDependencyResolverFactory.cs" />
     <Compile Include="IService.cs" />
@@ -224,6 +225,7 @@
     <Compile Include="WebSocket\ISuperSocketConfigurationProvider.cs" />
     <Compile Include="WebSocket\JsonRequestInfoParser.cs" />
     <Compile Include="WebSocket\JsonSubRequestInfo.cs" />
+    <Compile Include="WebSocket\RandomPortConfigProvider.cs" />
     <Compile Include="WebSocket\SuperSocketBootStrapper.cs" />
     <Compile Include="WebSocket\SuperSocketAppConfigProvider.cs" />
     <Compile Include="WebSocket\WebSocketServer.cs" />

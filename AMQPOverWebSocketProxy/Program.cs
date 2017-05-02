@@ -73,7 +73,7 @@ namespace AMQPOverWebSocketProxy
                     }
                 })));
 
-            Container.RegisterSingleton<IService, RemoteService>();
+            Container.RegisterSingleton<IService, Service>();
 
             Container.RegisterSingleton<IServiceProvider>(() => Container);
 

@@ -33,48 +33,25 @@ namespace AMQPOverWebSocketProxyDeployer
         {
             Configure();
 
-            using (var system = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
-            akka {  
-                actor{
-                    provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
-                    deployment {
-                        /socket-actor {
-                            remote = ""akka.tcp://AMQP-over-WebSocket-Proxy-Actors@localhost:8090""
-                        }
-                    }
-                }
-                remote {
-                    helios.tcp {
-                        port = 0
-                        hostname = localhost
-                    }
-                }
-            }")))
+            using (var system = ActorSystem.Create("AMQP-over-WebSocket-Proxy-Actors-Deployer"))
             {
-                var a = new SimpleInjectorDependencyResolverFactory(Container);
-                a.Create(system);
+                var dependencyResolverFactory = new SimpleInjectorDependencyResolverFactory(Container);
+                dependencyResolverFactory.Create(system);
 
-                //var actor = system.ActorOf(Props.Create(() => new TestActor()), "socket-actor");
-                //system.ActorOf(Props.Create(() => new SendActor(actor)), "sender");
-                system.ActorOf(Props.Create(() => new SocketSupervisor2()), "socket-actor");
+                system.ActorOf(Props.Create(() => new SocketSupervisorActor()), "socket-supervisor-actor");
 
                 Console.ReadKey();
             }
         }
 
-        private static void DummyFunc()
-        {
-
-        }
-
         private static void Configure()
         {
             /* WebSocket */
-            Container.Register<IBootstrap, SuperSocketBootStrapper>();
+            Container.RegisterSingleton<IBootstrap, SuperSocketBootStrapper>();
             Container.RegisterSingleton<ISuperSocketConfigurationProvider, RandomPortConfigProvider>();
             Container.RegisterSingleton<ILogFactory, DefaultLogFactory>();
-            Container.Register<ISubProtocol<WebSocketSession>, CommandProtocol>();
-            Container.Register<ISocketFactory, PassthroughSocketFactory>();
+            Container.RegisterSingleton<ISubProtocol<WebSocketSession>, CommandProtocol>();
+            Container.RegisterSingleton<ISocketFactory, PassthroughSocketFactory>();
             Container.RegisterSingleton<IRequestInfoParser<SubRequestInfo>, JsonRequestInfoParser>();
 
             IEnumerable<Assembly> commands = new List<Assembly>();
@@ -94,13 +71,8 @@ namespace AMQPOverWebSocketProxyDeployer
                     }
                 })));
 
-            //Container.RegisterSingleton<IService, Service>();
-
             Container.RegisterSingleton<IServiceProvider>(() => Container);
 
-            Registration registration = Container.GetRegistration(typeof(IBootstrap)).Registration;
-            registration.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent,
-                "Reason of suppression");
             Container.Verify();
         }
     }

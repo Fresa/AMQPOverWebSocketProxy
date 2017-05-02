@@ -46,7 +46,7 @@
       <HintPath>..\packages\Akka.Remote.1.2.0\lib\net45\Akka.Remote.dll</HintPath>
     </Reference>
     <Reference Include="Common.Serialization">
-      <HintPath>..\packages\Common.Serialization.2.0.45.42\lib\net451\Common.Serialization.dll</HintPath>
+      <HintPath>..\packages\Common.Serialization.2.2.0.49\lib\net451\Common.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="DotNetty.Buffers, Version=0.0.0.0, Culture=neutral, PublicKeyToken=bc13ca065fa06c29, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetty.Buffers.0.4.3\lib\net45\DotNetty.Buffers.dll</HintPath>
