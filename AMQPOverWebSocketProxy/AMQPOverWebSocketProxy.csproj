@@ -222,9 +222,13 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebSocket\CommandProtocol.cs" />
+    <Compile Include="WebSocket\Commands\BaseCommand.cs" />
+    <Compile Include="WebSocket\Commands\Request.cs" />
+    <Compile Include="WebSocket\Commands\SendCommand.cs" />
     <Compile Include="WebSocket\ISuperSocketConfigurationProvider.cs" />
     <Compile Include="WebSocket\JsonRequestInfoParser.cs" />
     <Compile Include="WebSocket\JsonSubRequestInfo.cs" />
+    <Compile Include="WebSocket\Messages\FormatErrorMessage.cs" />
     <Compile Include="WebSocket\RandomPortConfigProvider.cs" />
     <Compile Include="WebSocket\SuperSocketBootStrapper.cs" />
     <Compile Include="WebSocket\SuperSocketAppConfigProvider.cs" />

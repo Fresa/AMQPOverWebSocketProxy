@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 using AMQPOverWebSocketProxy.IOC;
 using AMQPOverWebSocketProxy.Logging;
 using AMQPOverWebSocketProxy.Serialization;
 using AMQPOverWebSocketProxy.WebSocket;
+using AMQPOverWebSocketProxy.WebSocket.Commands;
 using Common.Serialization;
 using Common.Serialization.Serializer;
 using Newtonsoft.Json;
 using SimpleInjector;
-using SimpleInjector.Diagnostics;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Logging;
 using SuperSocket.SocketBase.Protocol;
@@ -49,15 +47,17 @@ namespace AMQPOverWebSocketProxy
         private static void Configure()
         {
             /* WebSocket */
-            Container.Register<IBootstrap, SuperSocketBootStrapper>();
+            Container.RegisterSingleton<IBootstrap, SuperSocketBootStrapper>();
             Container.RegisterSingleton<ISuperSocketConfigurationProvider, RandomPortConfigProvider>();
             Container.RegisterSingleton<ILogFactory, DefaultLogFactory>();
-            Container.Register<ISubProtocol<WebSocketSession>, CommandProtocol>();
-            Container.Register<ISocketFactory, PassthroughSocketFactory>();
+            Container.RegisterSingleton<ISubProtocol<WebSocketSession>, CommandProtocol>();
+            Container.RegisterSingleton<ISocketFactory, PassthroughSocketFactory>();
             Container.RegisterSingleton<IRequestInfoParser<SubRequestInfo>, JsonRequestInfoParser>();
 
-            IEnumerable<Assembly> commands = new List<Assembly>();
-            Container.RegisterCollection<ISubCommand<WebSocketSession>>(commands);
+            Container.RegisterCollection<ISubCommand<WebSocketSession>>(new[]
+            {
+                typeof(SendCommand)
+            });
 
             Container.RegisterSingleton<ISerializer>(() =>
                 new JsonNetSerializer(JsonSerializer.Create(new JsonSerializerSettings
@@ -77,9 +77,6 @@ namespace AMQPOverWebSocketProxy
 
             Container.RegisterSingleton<IServiceProvider>(() => Container);
 
-            Registration registration = Container.GetRegistration(typeof(IBootstrap)).Registration;
-            registration.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent,
-                "Reason of suppression");
             Container.Verify();
         }
     }
