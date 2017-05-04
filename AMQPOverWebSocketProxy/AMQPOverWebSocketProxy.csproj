@@ -217,6 +217,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actors\SocketSupervisorActor.cs" />
+    <Compile Include="Actors\SubRequestActor.cs" />
+    <Compile Include="Actors\SubRequestParsed.cs" />
+    <Compile Include="Actors\WebSocketMessageSenderActor.cs" />
+    <Compile Include="Akka\ActorExtensions.cs" />
+    <Compile Include="Akka\IActorRefGeneric.cs" />
+    <Compile Include="Akka\Props.cs" />
+    <Compile Include="Akka\TypedPropsSurrogate.cs" />
+    <Compile Include="Akka\TypedRef.cs" />
+    <Compile Include="Akka\TypeRefSurrogate.cs" />
+    <Compile Include="Akka\UntypedActor.cs" />
     <Compile Include="IOC\Configurer.cs" />
     <Compile Include="IOC\SimpleInjectorDependencyResolverExtensions.cs" />
     <Compile Include="IService.cs" />

@@ -1,8 +1,11 @@
-﻿namespace AMQPOverWebSocketProxy.WebSocket.Commands
+﻿using Akka.Actor;
+using Common.Serialization;
+
+namespace AMQPOverWebSocketProxy.WebSocket.Commands
 {
-    public class SendAmqpCommand : Command<AmqpRequest<object>>
+    public class SendAmqpCommand : BaseCommand<AmqpRequest<object>>
     {
-        public SendAmqpCommand(IActorRefGeneric<AmqpRequest<object>> amqpRequestActor) : base(amqpRequestActor)
+        public SendAmqpCommand(ISerializer serializer, IActorRefFactory actorRefFactory) : base(serializer, actorRefFactory)
         {
         }
 

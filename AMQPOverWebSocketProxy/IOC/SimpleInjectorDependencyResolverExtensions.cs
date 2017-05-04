@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using Akka.DI.Core;
+using AMQPOverWebSocketProxy.Akka;
 using AMQPOverWebSocketProxy.WebSocket.Commands;
 
 namespace AMQPOverWebSocketProxy.IOC
