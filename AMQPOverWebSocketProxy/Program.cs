@@ -1,18 +1,6 @@
-﻿using System;
+﻿using Akka.Actor;
 using AMQPOverWebSocketProxy.IOC;
-using AMQPOverWebSocketProxy.Logging;
-using AMQPOverWebSocketProxy.Serialization;
-using AMQPOverWebSocketProxy.WebSocket;
-using AMQPOverWebSocketProxy.WebSocket.Commands;
-using Common.Serialization;
-using Common.Serialization.Serializer;
-using Newtonsoft.Json;
 using SimpleInjector;
-using SuperSocket.SocketBase;
-using SuperSocket.SocketBase.Logging;
-using SuperSocket.SocketBase.Protocol;
-using SuperSocket.SocketBase.Sockets;
-using SuperSocket.WebSocket.SubProtocol;
 using Topshelf;
 using Topshelf.SimpleInjector;
 
@@ -21,6 +9,7 @@ namespace AMQPOverWebSocketProxy
     internal class Program
     {
         private static readonly Container Container = new Container();
+        private static ActorSystem _actorSystem;
 
         private static void Main()
         {
@@ -34,8 +23,12 @@ namespace AMQPOverWebSocketProxy
                 config.Service<IService>(configurator =>
                 {
                     configurator.ConstructUsingSimpleInjector();
-                    configurator.WhenStarted((service, control) => service.Start(control, new SimpleInjectorDependencyResolverFactory(Container)));
-                    configurator.WhenStopped(service => service.Stop());
+                    configurator.WhenStarted((service, control) => service.Start(control));
+                    configurator.WhenStopped(async service =>
+                    {
+                        service.Stop();
+                        await _actorSystem.Terminate();
+                    });
                 });
 
                 config.SetDescription("A proxy for the AMQP protocol over WebSocket");
@@ -46,38 +39,11 @@ namespace AMQPOverWebSocketProxy
 
         private static void Configure()
         {
-            /* WebSocket */
-            Container.RegisterSingleton<IBootstrap, SuperSocketBootStrapper>();
-            Container.RegisterSingleton<ISuperSocketConfigurationProvider, RandomPortConfigProvider>();
-            Container.RegisterSingleton<ILogFactory, DefaultLogFactory>();
-            Container.RegisterSingleton<ISubProtocol<WebSocketSession>, CommandProtocol>();
-            Container.RegisterSingleton<ISocketFactory, PassthroughSocketFactory>();
-            Container.RegisterSingleton<IRequestInfoParser<SubRequestInfo>, JsonRequestInfoParser>();
-
-            Container.RegisterCollection<ISubCommand<WebSocketSession>>(new[]
-            {
-                typeof(SendCommand)
-            });
-
-            Container.RegisterSingleton<ISerializer>(() =>
-                new JsonNetSerializer(JsonSerializer.Create(new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.None,
-                    DefaultValueHandling = DefaultValueHandling.Ignore,
-                    NullValueHandling = NullValueHandling.Ignore,
-                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                    ContractResolver = new NonPublicMembersContractResolver
-                    {
-                        CamelCase = true
-                    }
-                })));
+            _actorSystem = ActorSystem.Create("AMQP-over-WebSocket-Proxy-Actors");
 
             Container.RegisterSingleton<IService, Service>();
 
-            Container.RegisterSingleton<IServiceProvider>(() => Container);
-
-            Container.Verify();
+            Configurer.Configure(Container, _actorSystem);
         }
     }
 }

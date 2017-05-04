@@ -1,11 +1,10 @@
-﻿using AMQPOverWebSocketProxy.IOC;
-using Topshelf;
+﻿using Topshelf;
 
 namespace AMQPOverWebSocketProxy
 {
     public interface IService
     {
-        bool Start(HostControl hostControl, IDependencyResolverFactory dependencyResolverFactory);
+        bool Start(HostControl hostControl);
         void Stop();
     }
 }

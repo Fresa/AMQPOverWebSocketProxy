@@ -50,6 +50,12 @@
     <Reference Include="Common.Logging">
       <HintPath>..\packages\Common.Logging.3.0.0.31\lib\net451\Common.Logging.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Messaging">
+      <HintPath>..\packages\Common.Messaging.4.2.202\lib\net451\Common.Messaging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Messaging.Queue.RabbitMQ">
+      <HintPath>..\packages\Common.Messaging.Queue.RabbitMQ.4.3.186\lib\net451\Common.Messaging.Queue.RabbitMQ.dll</HintPath>
+    </Reference>
     <Reference Include="Common.Serialization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Serialization.2.2.0.49\lib\net451\Common.Serialization.dll</HintPath>
@@ -211,8 +217,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actors\SocketSupervisorActor.cs" />
-    <Compile Include="IOC\IDependencyResolverFactory.cs" />
-    <Compile Include="IOC\SimpleInjectorDependencyResolverFactory.cs" />
+    <Compile Include="IOC\Configurer.cs" />
+    <Compile Include="IOC\SimpleInjectorDependencyResolverExtensions.cs" />
     <Compile Include="IService.cs" />
     <Compile Include="Logging\DefaultLogFactory.cs" />
     <Compile Include="Logging\Logger.cs" />
@@ -222,9 +228,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebSocket\CommandProtocol.cs" />
-    <Compile Include="WebSocket\Commands\BaseCommand.cs" />
-    <Compile Include="WebSocket\Commands\Request.cs" />
-    <Compile Include="WebSocket\Commands\SendCommand.cs" />
+    <Compile Include="WebSocket\Commands\BaseAmqpCommand.cs" />
+    <Compile Include="WebSocket\Commands\AmqpRequest.cs" />
+    <Compile Include="WebSocket\Commands\SendAmqpCommand.cs" />
     <Compile Include="WebSocket\ISuperSocketConfigurationProvider.cs" />
     <Compile Include="WebSocket\JsonRequestInfoParser.cs" />
     <Compile Include="WebSocket\JsonSubRequestInfo.cs" />
