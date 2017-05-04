@@ -30,7 +30,7 @@ namespace AMQPOverWebSocketProxy.IOC
             container.RegisterSingleton<ISocketFactory, PassthroughSocketFactory>();
             container.RegisterSingleton<IRequestInfoParser<SubRequestInfo>, JsonRequestInfoParser>();
 
-            container.RegisterSingleton<IActorRefGeneric<AmqpRequest<object>>>(() => actorSystem.ActorOf(container.GetInstance<IDependencyResolver>().Create<AmqpRequest<object>, SubRequestActor<AmqpRequest<object>>>(), "sub-request-actor-for-object-based-amqp-requests"));
+            //container.RegisterSingleton<IActorRefGeneric<AmqpRequest<object>>>(() => actorSystem.ActorOf(container.GetInstance<IDependencyResolver>().Create<AmqpRequest<object>, SubRequestActor<AmqpRequest<object>>>(), "sub-request-actor-for-object-based-amqp-requests"));
             container.RegisterCollection<ISubCommand<WebSocketSession>>(new[]
             {
                 typeof(SendAmqpCommand2)
@@ -50,6 +50,9 @@ namespace AMQPOverWebSocketProxy.IOC
                     }
                 })));
 
+            container.RegisterSingleton<IRequestActorFactory, RequestActorFactory>();
+
+            container.RegisterSingleton(() => actorSystem);
             container.RegisterSingleton<IDependencyResolver>(() => new SimpleInjectorDependencyResolver(container, actorSystem));
 
             var containerRegistration = Lifestyle.Singleton.CreateRegistration(() => container, container);

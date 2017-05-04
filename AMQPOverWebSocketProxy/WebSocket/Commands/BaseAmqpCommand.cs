@@ -17,7 +17,7 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
             try
             {
                 amqpRequest =
-                    (AmqpRequest<TMessage>) session.AppServer.JsonDeserialize(requestInfo.Body, typeof(AmqpRequest<TMessage>));
+                    (AmqpRequest<TMessage>)session.AppServer.JsonDeserialize(requestInfo.Body, typeof(AmqpRequest<TMessage>));
             }
             catch (Exception ex)
             {
@@ -26,12 +26,41 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
             }
             Execute(session, amqpRequest);
         }
-        
+
         protected abstract void Execute(WebSocketSession session, AmqpRequest<TMessage> request);
 
         public abstract string Name { get; }
     }
-    
+
+
+    public class SendAmqpCommand2 : Command2<AmqpRequest<object>>
+    {
+        public SendAmqpCommand2(IRequestActorFactory actorFactory) : base(actorFactory)
+        {
+        }
+
+        public override string Name { get; } = "Send";
+    }
+
+    public abstract class Command2<TRequest> : ISubCommand<WebSocketSession>
+    {
+        private readonly IRequestActorFactory _actorFactory;
+
+        protected Command2(IRequestActorFactory actorFactory)
+        {
+            _actorFactory = actorFactory;
+        }
+
+        public void ExecuteCommand(WebSocketSession session, SubRequestInfo requestInfo)
+        {
+            var actor = _actorFactory.Create<TRequest>(session);
+
+            actor.Tell(new SubRequestReceived<TRequest>(requestInfo));            
+        }
+
+        public abstract string Name { get; }
+    }
+
     public abstract class Command<TRequest> : ISubCommand<WebSocketSession>
     {
         private readonly IActorRefGeneric<TRequest> _subRequestActor;
@@ -43,27 +72,76 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
 
         public void ExecuteCommand(WebSocketSession session, SubRequestInfo requestInfo)
         {
+
             _subRequestActor.Tell(new SubRequestReceived<TRequest>(requestInfo));
-            var processedTask = _subRequestActor.Ask<CommandProcessed>("notifiy-when-processed");
-            if (processedTask.Wait(TimeSpan.FromSeconds(5)) == false)
+            if (_subRequestActor.Ask<CommandProcessed>(new GetCommandProcessStatus()).Wait(TimeSpan.FromSeconds(5)) ==
+                false)
             {
-                session.Send(session.AppServer.JsonSerialize(new Timeout()));
+                session.Send(session.AppServer.JsonSerialize(new Timedout()));
             }
         }
 
         public abstract string Name { get; }
     }
 
-    public class Timeout 
+    public interface IRequestActorFactory
     {
+        IActorRefGeneric<TRequest> Create<TRequest>(WebSocketSession session);
+    }
+
+    public class RequestActorFactory : IRequestActorFactory
+    {
+        private readonly ActorSystem _system;
+        private readonly ISerializer _serializer;
+
+        public RequestActorFactory(ActorSystem system, ISerializer serializer)
+        {
+            _system = system;
+            _serializer = serializer;
+        }
+
+        public IActorRefGeneric<TRequest> Create<TRequest>(WebSocketSession session)
+        {
+            var sessionSenderActor = _system.ActorOf(Props.Create(() => new SessionSenderActor(session)));
+            return _system.ActorOf(
+                Props<TRequest>.Create(() => new SubRequestActor<TRequest>(_serializer, sessionSenderActor)));
+        }
+    }
+
+    public class GetCommandProcessStatus
+    {
+    }
+
+    public class Timedout
+    {
+    }
+
+    public class SessionSenderActor : ReceiveActor
+    {
+        public SessionSenderActor(WebSocketSession session)
+        {
+            Receive<SendMessage>(message => session.Send(session.AppServer.JsonSerialize(message)));
+        }
+    }
+
+    public class SendMessage
+    {
+        public SendMessage(object message)
+        {
+            Message = message;
+        }
+
+        public object Message { get; }
     }
 
     public class SubRequestActor<TRequest> : ReceiveActor
     {
+        private readonly IActorRef _sessionActor;
         private readonly ISerializer _serializer;
 
-        public SubRequestActor(ISerializer serializer)
+        public SubRequestActor(ISerializer serializer, IActorRef sessionActor)
         {
+            _sessionActor = sessionActor;
             _serializer = serializer;
             Receive<SubRequestReceived<TRequest>>(request => Handler(request));
         }
@@ -77,10 +155,11 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
             }
             catch (Exception ex)
             {
-                Sender.Tell(new FormatErrorMessage($"Incorrectly formatted message. {ex.Message}"));
+                _sessionActor.Tell(new SendMessage(new FormatErrorMessage($"Incorrectly formatted message. {ex.Message}")));
                 return;
             }
             // todo: send to another actor
+
             Sender.Tell(new SubRequestParsed<TRequest>(amqpRequest));
 
             // todo: tell sender when everything went fine
@@ -90,10 +169,10 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
 
     internal class CommandProcessed
     {
-        
+
     }
 
-    
+
 
     internal class SubRequestParsed<T>
     {
@@ -117,7 +196,7 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
 
     public class CommandSupervisingActor : ReceiveActor
     {
-        
+
     }
 
 
@@ -172,7 +251,7 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
             this.Underlying = props;
         }
 
-        public static Props<T> Create<TActor>(Expression<Func<TActor>> fac) where TActor : Actor<T>
+        public static Props<T> Create<TActor>(Expression<Func<TActor>> fac) where TActor : ActorBase
             => new Props<T>(Props.Create(fac));
 
         public ISurrogate ToSurrogate(ActorSystem system) => new TypedPropsSurrogate<T>(Underlying.ToSurrogate(system));
