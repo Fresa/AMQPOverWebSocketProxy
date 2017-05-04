@@ -51,10 +51,10 @@
       <HintPath>..\packages\Common.Logging.3.0.0.31\lib\net451\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Common.Messaging">
-      <HintPath>..\packages\Common.Messaging.4.2.202\lib\net451\Common.Messaging.dll</HintPath>
+      <HintPath>..\packages\Common.Messaging.4.1.190\lib\net451\Common.Messaging.dll</HintPath>
     </Reference>
     <Reference Include="Common.Messaging.Queue.RabbitMQ">
-      <HintPath>..\packages\Common.Messaging.Queue.RabbitMQ.4.3.186\lib\net451\Common.Messaging.Queue.RabbitMQ.dll</HintPath>
+      <HintPath>..\packages\Common.Messaging.Queue.RabbitMQ.4.2.172\lib\net451\Common.Messaging.Queue.RabbitMQ.dll</HintPath>
     </Reference>
     <Reference Include="Common.Serialization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -218,7 +218,6 @@
   <ItemGroup>
     <Compile Include="Actors\SocketSupervisorActor.cs" />
     <Compile Include="Actors\SubRequestActor.cs" />
-    <Compile Include="Actors\SubRequestParsed.cs" />
     <Compile Include="Actors\WebSocketMessageSenderActor.cs" />
     <Compile Include="Akka\ActorExtensions.cs" />
     <Compile Include="Akka\IActorRefGeneric.cs" />
