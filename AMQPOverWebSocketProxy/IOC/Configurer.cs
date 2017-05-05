@@ -2,6 +2,8 @@
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.SimpleInjector;
+using AMQPOverWebSocketProxy.Actors;
+using AMQPOverWebSocketProxy.Akka;
 using AMQPOverWebSocketProxy.Logging;
 using AMQPOverWebSocketProxy.Serialization;
 using AMQPOverWebSocketProxy.WebSocket;
@@ -35,6 +37,10 @@ namespace AMQPOverWebSocketProxy.IOC
                 typeof(SendAmqpCommand)
             });
 
+            //container.RegisterSingleton<AmqpSendCommandActor.SubRequestParsed<AmqpRequest<object>>>(() =>  new MessageHandlingActorResolver().Register<>());
+            container.RegisterSingleton<IActorResolver>(() => new ActorResolver()
+                .Register<UntypedActor<AmqpSendCommandActor.SubRequestParsed<AmqpRequest<object>>>, AmqpSendCommandActor>());
+
             container.RegisterSingleton<ISerializer>(() =>
                 new JsonNetSerializer(JsonSerializer.Create(new JsonSerializerSettings
                 {
@@ -49,14 +55,20 @@ namespace AMQPOverWebSocketProxy.IOC
                     }
                 })));
 
-
             container.RegisterSingleton<IActorRefFactory>(() => actorSystem);
             container.RegisterSingleton<IDependencyResolver>(() => new SimpleInjectorDependencyResolver(container, actorSystem));
             container.RegisterSingleton<IServiceProvider>(() => container);
-            
+
             container.Verify();
         }
     }
 
+    public static class ContainerExtensions
+    {
+        public static void RegisterActor<TService, TImplementation>(this Container container)
+        {
+
+        }
+    }
 
 }

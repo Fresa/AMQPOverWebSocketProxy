@@ -216,11 +216,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actors\AmqpSendCommandActor.cs" />
+    <Compile Include="Actors\MessageProxyActor.cs" />
     <Compile Include="Actors\SocketSupervisorActor.cs" />
     <Compile Include="Actors\SubRequestActor.cs" />
     <Compile Include="Actors\WebSocketMessageSenderActor.cs" />
     <Compile Include="Akka\ActorExtensions.cs" />
+    <Compile Include="Akka\ActorResolver.cs" />
+    <Compile Include="Akka\DiActorContextAdapterExtensions.cs" />
     <Compile Include="Akka\IActorRefGeneric.cs" />
+    <Compile Include="Akka\IActorResolver.cs" />
     <Compile Include="Akka\Props.cs" />
     <Compile Include="Akka\TypedPropsSurrogate.cs" />
     <Compile Include="Akka\TypedRef.cs" />

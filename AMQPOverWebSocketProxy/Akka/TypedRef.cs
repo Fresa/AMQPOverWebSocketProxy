@@ -4,7 +4,7 @@ using Akka.Util;
 
 namespace AMQPOverWebSocketProxy.Akka
 {
-    public struct TypedRef<T> : IActorRefGeneric<T>
+    public struct TypedRef<T> : IActorRef<T>
     {
         public TypedRef(IActorRef aref) : this()
         {

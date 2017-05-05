@@ -21,7 +21,7 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
         {
             var webSocketMessageSenderActor = _actorRefFactory.ActorOf(Props.Create(() => new WebSocketMessageSenderActor(session)));
             var subRequestActor = _actorRefFactory.ActorOf(
-                Props<TRequest>.Create(() => new SubRequestActor<TRequest>(_serializer, webSocketMessageSenderActor)));
+                Props.Create(() => new SubRequestActor<TRequest>(_serializer, webSocketMessageSenderActor)));
 
             subRequestActor.Tell(new SubRequestActor<TRequest>.SubRequestReceived(requestInfo));
         }

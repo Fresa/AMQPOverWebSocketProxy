@@ -2,7 +2,7 @@
 
 namespace AMQPOverWebSocketProxy.Akka
 {
-    public interface IActorRefGeneric<in T> : IActorRef
+    public interface IActorRef<in T> : IActorRef
     {
         void Tell(T message, IActorRef sender);
         void Tell(T message);
