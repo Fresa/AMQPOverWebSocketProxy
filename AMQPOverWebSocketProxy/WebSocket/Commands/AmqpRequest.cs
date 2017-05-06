@@ -4,6 +4,8 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
 {
     public class AmqpRequest<TBody>
     {
+        public ConnectRequest Connection { get; set; }
+
         public string MessageId { get; set; }
         public string CorrelationId { get; set; }
         public string MessageKey { get; set; }

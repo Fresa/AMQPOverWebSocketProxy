@@ -37,9 +37,13 @@ namespace AMQPOverWebSocketProxy.IOC
                 typeof(SendAmqpCommand)
             });
 
-            //container.RegisterSingleton<AmqpSendCommandActor.SubRequestParsed<AmqpRequest<object>>>(() =>  new MessageHandlingActorResolver().Register<>());
+            var connectionPoolActorRegistration =
+                Lifestyle.Singleton.CreateRegistration(
+                    () => actorSystem.ActorOf(Props.Create(() => new ConnectionPoolActor())), container);
+            container.RegisterConditional(typeof(IActorRef), connectionPoolActorRegistration, context => context.Consumer.ImplementationType == typeof(AmqpReceiveCommandActor));
+
             container.RegisterSingleton<IActorResolver>(() => new ActorResolver()
-                .Register<UntypedActor<AmqpSendCommandActor.SubRequestParsed<AmqpRequest<object>>>, AmqpSendCommandActor>());
+                .Register<UntypedActor<SubRequestActor<AmqpRequest<object>>.SubRequestParsed>, AmqpReceiveCommandActor>());
 
             container.RegisterSingleton<ISerializer>(() =>
                 new JsonNetSerializer(JsonSerializer.Create(new JsonSerializerSettings
@@ -62,13 +66,4 @@ namespace AMQPOverWebSocketProxy.IOC
             container.Verify();
         }
     }
-
-    public static class ContainerExtensions
-    {
-        public static void RegisterActor<TService, TImplementation>(this Container container)
-        {
-
-        }
-    }
-
 }

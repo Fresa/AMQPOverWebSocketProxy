@@ -219,7 +219,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actors\AmqpSendCommandActor.cs" />
+    <Compile Include="Actors\AmqpReceiveCommandActor.cs" />
     <Compile Include="Actors\MessageProxyActor.cs" />
     <Compile Include="Actors\SocketSupervisorActor.cs" />
     <Compile Include="Actors\SubRequestActor.cs" />

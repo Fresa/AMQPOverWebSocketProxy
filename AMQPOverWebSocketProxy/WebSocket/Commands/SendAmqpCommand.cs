@@ -22,4 +22,20 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
             _messageProducerFactory = messageProducerFactory;
         }
     }
+
+    public class ConnectToBrokerCommand : BaseCommand<ConnectRequest>
+    {
+        public ConnectToBrokerCommand(ISerializer serializer, IActorRefFactory actorRefFactory) : base(serializer, actorRefFactory)
+        {
+        }
+
+        public override string Name { get; } = "Connect";
+    }
+
+    public class ConnectRequest
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public string VirtualHost { get; set; }
+    }
 }

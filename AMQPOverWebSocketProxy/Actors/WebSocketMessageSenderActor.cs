@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using System;
+using Akka.Actor;
 using AMQPOverWebSocketProxy.WebSocket;
 
 namespace AMQPOverWebSocketProxy.Actors
@@ -21,7 +22,15 @@ namespace AMQPOverWebSocketProxy.Actors
 
         public WebSocketMessageSenderActor(WebSocketSession session)
         {
-            Receive<SendMessage>(message => session.Send(session.AppServer.JsonSerialize(message)));
+            Receive<SendMessage>(message =>
+            {
+                if (session.Connected)
+                {
+                    session.Send(session.AppServer.JsonSerialize(message));
+                }
+
+                throw new InvalidOperationException("Websocket session is closed.");
+            });
         }
     }
 }

@@ -23,6 +23,16 @@ namespace AMQPOverWebSocketProxy.Actors
             }
         }
 
+        public class SubRequestParsed
+        {
+            public TRequest Request { get; }
+
+            public SubRequestParsed(TRequest request)
+            {
+                Request = request;
+            }
+        }
+
         #endregion
 
         private readonly IActorRef _webSocketMessageSenderActor;
@@ -50,12 +60,12 @@ namespace AMQPOverWebSocketProxy.Actors
             
             var messageProxyActor = Context.ActorOf(
                 Context.DI().Props<
-                    AmqpSendCommandActor.SubRequestParsed<TRequest>, 
+                    SubRequestParsed, 
                     MessageProxyActor<
-                        UntypedActor<AmqpSendCommandActor.SubRequestParsed<TRequest>>, 
-                        AmqpSendCommandActor.SubRequestParsed<TRequest>>>());
+                        UntypedActor<SubRequestParsed>, 
+                        SubRequestParsed>>());
 
-            messageProxyActor.Tell(new AmqpSendCommandActor.SubRequestParsed<TRequest>(amqpRequest));
+            messageProxyActor.Tell(new SubRequestParsed(amqpRequest));
         }
     }
 }
