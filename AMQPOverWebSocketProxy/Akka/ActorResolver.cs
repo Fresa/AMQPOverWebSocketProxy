@@ -17,7 +17,7 @@ namespace AMQPOverWebSocketProxy.Akka
         }
 
         public ActorResolver Register<TActorService, TActorImplementation, TMessage>()
-            where TActorService : UntypedActor<TMessage>
+            where TActorService : IReceive<TMessage>
             where TActorImplementation : TActorService
         {
             _register.Add(typeof(TActorService), typeof(TActorImplementation));
@@ -31,7 +31,7 @@ namespace AMQPOverWebSocketProxy.Akka
         }
 
         public IActorRef<TMessage> Resolve<TService, TMessage>(Func<Type, IActorRef<TMessage>> factory)
-            where TService : UntypedActor<TMessage>
+            where TService : ActorBase, IReceive<TMessage>
         {
             return factory(_register[typeof(TService)]);
         }

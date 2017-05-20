@@ -9,6 +9,6 @@ namespace AMQPOverWebSocketProxy.Akka
             where TService : ActorBase;
 
         IActorRef<TMessage> Resolve<TService, TMessage>(Func<Type, IActorRef<TMessage>> factory)
-            where TService : UntypedActor<TMessage>;
+            where TService : ActorBase, IReceive<TMessage>;
     }
 }

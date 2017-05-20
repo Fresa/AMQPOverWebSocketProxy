@@ -9,6 +9,7 @@ namespace AMQPOverWebSocketProxy.WebSocket.Commands
         public string MessageId { get; set; }
         public string CorrelationId { get; set; }
         public string MessageKey { get; set; }
+        public string VirtualHost { get; set; }
         public string Exchange { get; set; }
 
         public Dictionary<string, object> Headers { get; set; }

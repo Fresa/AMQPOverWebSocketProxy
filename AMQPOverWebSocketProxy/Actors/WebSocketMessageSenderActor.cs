@@ -1,11 +1,14 @@
 ﻿using System;
 using Akka.Actor;
+using AMQPOverWebSocketProxy.Akka;
 using AMQPOverWebSocketProxy.WebSocket;
 
 namespace AMQPOverWebSocketProxy.Actors
 {
-    public class WebSocketMessageSenderActor : ReceiveActor
+    public class WebSocketMessageSenderActor : ReceiveActor<WebSocketMessageSenderActor.SendMessage>
     {
+        private readonly WebSocketSession _session;
+
         #region Messages
 
         public class SendMessage
@@ -22,15 +25,17 @@ namespace AMQPOverWebSocketProxy.Actors
 
         public WebSocketMessageSenderActor(WebSocketSession session)
         {
-            Receive<SendMessage>(message =>
-            {
-                if (session.Connected)
-                {
-                    session.Send(session.AppServer.JsonSerialize(message));
-                }
+            _session = session;
+        }
 
-                throw new InvalidOperationException("Websocket session is closed.");
-            });
+        protected override void OnReceive(SendMessage message)
+        {
+            if (_session.Connected)
+            {
+                _session.Send(_session.AppServer.JsonSerialize(message));
+            }
+
+            throw new InvalidOperationException("Websocket session is closed.");
         }
     }
 }

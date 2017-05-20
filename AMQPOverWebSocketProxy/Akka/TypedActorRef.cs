@@ -4,12 +4,11 @@ using Akka.Util;
 
 namespace AMQPOverWebSocketProxy.Akka
 {
-    public struct TypedRef<T> : IActorRef<T>
+    public struct TypedActorRef<T> : IActorRef<T>
     {
-        public TypedRef(IActorRef aref) : this()
+        public TypedActorRef(IActorRef aref) : this()
         {
-            if (aref == null) throw new ArgumentNullException(nameof(aref), $"{this} has received null instead of {nameof(IActorRef)}");
-            Ref = aref;
+            Ref = aref ?? throw new ArgumentNullException(nameof(aref), $"{this} has received null instead of {nameof(IActorRef)}");
         }
 
         public IActorRef Ref { get; }
@@ -19,10 +18,10 @@ namespace AMQPOverWebSocketProxy.Akka
         public void Tell(T message) => Ref.Tell(message, ActorCell.GetCurrentSelfOrNoSender());
 
         public bool Equals(IActorRef other) =>
-            other is TypedRef<T> ? Ref.Equals(((TypedRef<T>)other).Ref) : Ref.Equals(other);
+            other is TypedActorRef<T> ? Ref.Equals(((TypedActorRef<T>)other).Ref) : Ref.Equals(other);
 
         public int CompareTo(IActorRef other) =>
-            other is TypedRef<T> ? Ref.CompareTo(((TypedRef<T>)other).Ref) : Ref.CompareTo(other);
+            other is TypedActorRef<T> ? Ref.CompareTo(((TypedActorRef<T>)other).Ref) : Ref.CompareTo(other);
 
         public ISurrogate ToSurrogate(ActorSystem system) => new TypeRefSurrogate<T>(Ref.ToSurrogate(system));
 

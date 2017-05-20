@@ -220,7 +220,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actors\AmqpReceiveCommandActor.cs" />
+    <Compile Include="Actors\ActorProxyActor.cs" />
+    <Compile Include="Actors\ConnectionFactoryActor.cs" />
+    <Compile Include="Actors\ConnectionSettings.cs" />
+    <Compile Include="Actors\Factories\IConnectionActorFactory.cs" />
+    <Compile Include="Actors\IConnectSettings.cs" />
     <Compile Include="Actors\MessageProxyActor.cs" />
+    <Compile Include="Actors\MessageRouterActor.cs" />
+    <Compile Include="Actors\Messages\Envelope.cs" />
+    <Compile Include="Actors\Messages\MessageSent.cs" />
+    <Compile Include="Actors\Messages\Send.cs" />
+    <Compile Include="Actors\Factories\RabbitMqConnectionActorFactory.cs" />
+    <Compile Include="Actors\RabbitMqMessageProducerActor.cs" />
+    <Compile Include="Actors\RabbitMqMessageProducerFactoryActor.cs" />
     <Compile Include="Actors\SocketSupervisorActor.cs" />
     <Compile Include="Actors\SubRequestActor.cs" />
     <Compile Include="Actors\WebSocketMessageSenderActor.cs" />
@@ -231,7 +243,7 @@
     <Compile Include="Akka\IActorResolver.cs" />
     <Compile Include="Akka\Props.cs" />
     <Compile Include="Akka\TypedPropsSurrogate.cs" />
-    <Compile Include="Akka\TypedRef.cs" />
+    <Compile Include="Akka\TypedActorRef.cs" />
     <Compile Include="Akka\TypeRefSurrogate.cs" />
     <Compile Include="Akka\UntypedActor.cs" />
     <Compile Include="IOC\Configurer.cs" />
@@ -239,6 +251,9 @@
     <Compile Include="IService.cs" />
     <Compile Include="Logging\DefaultLogFactory.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Messaging\DeliveryMode.cs" />
+    <Compile Include="Messaging\IMessageProperties.cs" />
+    <Compile Include="Messaging\RabbitMQMessageProperties.cs" />
     <Compile Include="Serialization\NonPublicMembersContractResolver.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="Actors\SocketActor.cs" />

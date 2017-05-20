@@ -24,6 +24,9 @@ namespace AMQPOverWebSocketProxy.IOC
     {
         public static void Configure(Container container, ActorSystem actorSystem)
         {
+            var dependencyResolver = new SimpleInjectorDependencyResolver(container, actorSystem);
+            container.RegisterSingleton<IDependencyResolver>(() => dependencyResolver);
+
             /* WebSocket */
             container.RegisterSingleton<IBootstrap, SuperSocketBootStrapper>();
             container.RegisterSingleton<ISuperSocketConfigurationProvider, RandomPortConfigProvider>();
@@ -37,13 +40,13 @@ namespace AMQPOverWebSocketProxy.IOC
                 typeof(SendAmqpCommand)
             });
 
-            var connectionPoolActorRegistration =
+            var connectionFactoryActor =
                 Lifestyle.Singleton.CreateRegistration(
-                    () => actorSystem.ActorOf(Props.Create(() => new ConnectionPoolActor())), container);
-            container.RegisterConditional(typeof(IActorRef), connectionPoolActorRegistration, context => context.Consumer.ImplementationType == typeof(AmqpReceiveCommandActor));
+                    () => actorSystem.ActorOf(dependencyResolver.Create<ConnectionFactoryActor>()), container);
+            container.RegisterConditional(typeof(IActorRef), connectionFactoryActor, context => context.Consumer.ImplementationType == typeof(AmqpReceiveCommandActor));
 
             container.RegisterSingleton<IActorResolver>(() => new ActorResolver()
-                .Register<UntypedActor<SubRequestActor<AmqpRequest<object>>.SubRequestParsed>, AmqpReceiveCommandActor>());
+                .Register<ReceiveActor<SubRequestActor<AmqpRequest<object>>.SubRequestParsed>, AmqpReceiveCommandActor>());
 
             container.RegisterSingleton<ISerializer>(() =>
                 new JsonNetSerializer(JsonSerializer.Create(new JsonSerializerSettings
@@ -60,7 +63,6 @@ namespace AMQPOverWebSocketProxy.IOC
                 })));
 
             container.RegisterSingleton<IActorRefFactory>(() => actorSystem);
-            container.RegisterSingleton<IDependencyResolver>(() => new SimpleInjectorDependencyResolver(container, actorSystem));
             container.RegisterSingleton<IServiceProvider>(() => container);
 
             container.Verify();

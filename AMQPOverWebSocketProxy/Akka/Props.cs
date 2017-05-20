@@ -14,9 +14,8 @@ namespace AMQPOverWebSocketProxy.Akka
             Underlying = props ?? throw new ArgumentNullException(nameof(props), $"{this} has received null instead of {nameof(Props)}");
         }
 
-        public static Props<T> Create<TActor>(Expression<Func<TActor>> fac) where TActor : UntypedActor<T>
+        public static Props<T> Create<TActor>(Expression<Func<TActor>> fac) where TActor : ActorBase, IReceive<T>
             => new Props<T>(Props.Create(fac));
-
 
         public ISurrogate ToSurrogate(ActorSystem system) => new TypedPropsSurrogate<T>(Underlying.ToSurrogate(system));
     }

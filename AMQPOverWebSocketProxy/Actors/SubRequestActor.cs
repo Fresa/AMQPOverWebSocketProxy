@@ -26,19 +26,21 @@ namespace AMQPOverWebSocketProxy.Actors
         public class SubRequestParsed
         {
             public TRequest Request { get; }
+            public IActorRef<WebSocketMessageSenderActor.SendMessage> MessageSender { get; }
 
-            public SubRequestParsed(TRequest request)
+            public SubRequestParsed(TRequest request, IActorRef<WebSocketMessageSenderActor.SendMessage> messageSender)
             {
                 Request = request;
+                MessageSender = messageSender;
             }
         }
 
         #endregion
 
-        private readonly IActorRef _webSocketMessageSenderActor;
+        private readonly IActorRef<WebSocketMessageSenderActor.SendMessage> _webSocketMessageSenderActor;
         private readonly ISerializer _serializer;
 
-        public SubRequestActor(ISerializer serializer, IActorRef webSocketMessageSenderActor)
+        public SubRequestActor(ISerializer serializer, IActorRef<WebSocketMessageSenderActor.SendMessage> webSocketMessageSenderActor)
         {
             _webSocketMessageSenderActor = webSocketMessageSenderActor;
             _serializer = serializer;
@@ -54,18 +56,18 @@ namespace AMQPOverWebSocketProxy.Actors
             }
             catch (Exception ex)
             {
-                _webSocketMessageSenderActor.Tell(new WebSocketMessageSenderActor.SendMessage(new FormatErrorMessage($"Incorrectly formatted message. {ex.Message}")));
+                _webSocketMessageSenderActor.Tell(new WebSocketMessageSenderActor.SendMessage(new FormatErrorMessage($"Incorrectly formatted message. {ex.Message}")), Self);
                 return;
             }
-            
-            var messageProxyActor = Context.ActorOf(
+
+           var messageProxyActor = Context.ActorOf(
                 Context.DI().Props<
                     SubRequestParsed, 
-                    MessageProxyActor<
-                        UntypedActor<SubRequestParsed>, 
+                    ActorProxyActor<
+                        ReceiveActor<SubRequestParsed>, 
                         SubRequestParsed>>());
 
-            messageProxyActor.Tell(new SubRequestParsed(amqpRequest));
+            messageProxyActor.Tell(new SubRequestParsed(amqpRequest, _webSocketMessageSenderActor));
         }
     }
 }

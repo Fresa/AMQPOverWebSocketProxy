@@ -1,22 +1,25 @@
-﻿using Akka.DI.Core;
+using System;
+using Akka.Actor;
 using AMQPOverWebSocketProxy.Akka;
 
 namespace AMQPOverWebSocketProxy.Actors
 {
-    public class MessageProxyActor<TActor, TMessage> : UntypedActor<TMessage>
-        where TActor : UntypedActor<TMessage>
+    public class MessageProxyActor<TReceive, TSend> : ReceiveActor<TReceive>
     {
-        private readonly IActorResolver _resolver;
+        private readonly IActorRef<TSend> _receiver;
+        private readonly Func<TReceive, TSend> _mapper;
+        private readonly IActorRef _from;
 
-        public MessageProxyActor(IActorResolver resolver)
+        public MessageProxyActor(IActorRef<TSend> receiver, Func<TReceive, TSend> mapper, IActorRef from)
         {
-            _resolver = resolver;
+            _receiver = receiver;
+            _mapper = mapper;
+            _from = @from;
         }
 
-        protected override void OnReceive(TMessage message)
+        protected override void OnReceive(TReceive message)
         {
-            var actor = _resolver.Resolve<TActor, TMessage>(actorType => Context.ActorOf(Context.DI().Props<TMessage>(actorType)));
-            actor.Tell(message);
+            _receiver.Tell(_mapper(message), _from);
         }
     }
 }

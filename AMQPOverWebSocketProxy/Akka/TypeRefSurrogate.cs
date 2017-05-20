@@ -12,6 +12,6 @@ namespace AMQPOverWebSocketProxy.Akka
             RefSurrogate = refSurrogate;
         }
 
-        public ISurrogated FromSurrogate(ActorSystem system) => new TypedRef<T>((IActorRef)RefSurrogate.FromSurrogate(system));
+        public ISurrogated FromSurrogate(ActorSystem system) => new TypedActorRef<T>((IActorRef)RefSurrogate.FromSurrogate(system));
     }
 }
